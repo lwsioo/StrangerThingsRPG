@@ -5,8 +5,9 @@
 #include <string.h>
 
 struct Giocatore *players[4] = {NULL, NULL, NULL, NULL};
-static int undici_scelto = 0;
 
+//GESTIONE MAPPA
+static int undici_scelto = 0;
 struct Zona_MondoReale *prima_zona_mondoreale = NULL;
 struct Zona_SopraSotto *prima_zona_soprasotto = NULL;
 static int mappa_pronta = 0;
@@ -83,25 +84,6 @@ char getSimboloNemico(enum TipoNemico n) {
         case demotorzone: return 'D';
         default: return ' '; // Nessun nemico
     }
-}
-
-void printCredits() {
-  printf("\n" RED "==========================================" RESET "\n");
-  printf(RED "=                CREDITI                 =" RESET "\n");
-  printf(RED "==========================================" RESET "\n");
-  printf("\n");
-  printf("  " GRN "Sviluppatore:" RESET " Alessio Bragetti\n");
-  printf("  " GRN "Progetto:" RESET " Cose Strane\n");
-  printf("  " GRN "Versione:" RESET " 1.0.0\n");
-  printf("  " GRN "Anno:" RESET " 2025\n");
-  printf("\n");
-  printf("  --------------------------------------\n");
-  printf("  Realizzato per l'esame di:\n");
-  printf("  Programmazione I / Laboratorio\n");
-  printf("  --------------------------------------\n");
-  printf("\n" GRN "Premere INVIO per tornare al menu..." RESET "\n");
-
-  getchar();
 }
 
 void svuota_mappa() {
@@ -651,8 +633,9 @@ void impostaGioco() {
     printf("\nScegli un bonus:\n");
     printf("1) +3 ATK / -3 DEF\n");
     printf("2) -3 ATK / +3 DEF\n");
+    printf("3) -3 ATK/DEF +4 LUCK\n");
     if (!undici_scelto)
-      printf("3) Diventa UndiciVirgolaCinque (+4 ATK/DEF, -7 LUCK)\n");
+      printf("4) Diventa UndiciVirgolaCinque (+4 ATK/DEF, -7 LUCK)\n");
     printf("Scelta: ");
     scanf("%d", &scelta);
     while (getchar() != '\n')
@@ -664,7 +647,11 @@ void impostaGioco() {
     } else if (scelta == 2) {
       players[i]->attacco_psichico -= 3;
       players[i]->difesa_psichica += 3;
-    } else if (scelta == 3 && !undici_scelto) {
+    } else if (scelta == 3) {
+      players[i]->attacco_psichico -= 3;
+      players[i]->difesa_psichica -= 3;
+      players[i]->fortuna += 4;
+    } else if (scelta == 4 && !undici_scelto) {
       players[i]->attacco_psichico += 4;
       players[i]->difesa_psichica += 4;
       players[i]->fortuna -= 7;
@@ -672,7 +659,6 @@ void impostaGioco() {
       undici_scelto = 1;
     }
 
-    // Inizializzazione parametri iniziali
     players[i]->mondo = 0;
     for (int k = 0; k < 3; k++) {
       players[i]->zaino[k] = nessun_oggetto;
@@ -685,4 +671,546 @@ void impostaGioco() {
   printf("\n" GRN "Configurazione completata!" RESET "\n");
   printf("Premere INVIO per continuare...");
   getchar();
+}
+
+//STAMPA CREDITI
+
+void printCredits() {
+  printf("\n" RED "==========================================" RESET "\n");
+  printf(RED "=                CREDITI                 =" RESET "\n");
+  printf(RED "==========================================" RESET "\n");
+  printf("\n");
+  printf("  " GRN "Sviluppatore:" RESET " Alessio Bragetti\n");
+  printf("  " GRN "Progetto:" RESET " Cose Strane\n");
+  printf("  " GRN "Versione:" RESET " 1.0.0\n");
+  printf("  " GRN "Anno:" RESET " 2025\n");
+  printf("\n");
+  printf("  --------------------------------------\n");
+  printf("  Realizzato per l'esame di:\n");
+  printf("  Programmazione I / Laboratorio\n");
+  printf("  --------------------------------------\n");
+  printf("\n" GRN "Premere INVIO per tornare al menu..." RESET "\n");
+
+  getchar();
+}
+
+
+//STAMPA REGOLE
+void printRules() {
+  printf(RED "========================================================\n" RESET);
+  printf(RED "                  REGOLAMENTO DI GIOCO                  \n" RESET);
+  printf(RED "========================================================\n" RESET);
+
+  printf(YEL "\n1. CREAZIONE E PROFILI" RESET "\n");
+  printf("   - Ogni giocatore lancia un dado da 20 per determinare\n");
+  printf("     Attacco Psichico, Difesa Psichica e Fortuna.\n");
+  printf("   - Puoi scegliere un bonus: +3 ATK/-3 DEF o -3 ATK/+3 DEF o -3 ATK/DEF +4 LUCK.\n");
+  printf("   - " RED "UndiciVirgolaCinque" RESET ": Solo un giocatore può sceglierlo.\n");
+  printf("     Ottiene +4 ATK/DEF ma subisce -7 alla Fortuna.\n");
+
+  printf(YEL "\n2. ESPLORAZIONE E MAPPA" RESET "\n");
+  printf("   - Ti muoverai tra due mondi: il " GRN "Mondo Reale" RESET " e il " RED "Soprasotto" RESET ".\n");
+  printf("   - Ogni zona ha un gemello speculare nell'altra dimensione.\n");
+  printf("   - Puoi muoverti avanti o indietro lungo la mappa.\n");
+
+  printf(YEL "\n3. OGGETTI E NEMICI" RESET "\n");
+  printf("   - " GRN "Mondo Reale" RESET ": Trovi oggetti (Bici, Bussola, ecc.) e nemici\n");
+  printf("     meno pericolosi come Billi o i Democani.\n");
+  printf("   - " RED "Soprasotto" RESET ": Dimensione mortale senza oggetti.\n");
+  printf("     Qui si nasconde il temibile " RED "Demotorzone" RESET ".\n");
+
+  printf(YEL "\n4. OBIETTIVO E VITTORIA" RESET "\n");
+  printf("   - Sopravvivi agli incontri e gestisci bene il tuo zaino.\n");
+  printf("   - La vittoria si ottiene sconfiggendo il " RED "Demotorzone" RESET ".\n");
+  printf("   - Se i tuoi parametri vitali si azzerano, verrai eliminato.\n");
+
+  printf(RED "\n========================================================\n" RESET);
+  printf(GRN "Premere INVIO per tornare al menu principale...");
+  
+  getchar();
+}
+
+//GESTIONE GIOCO
+void stampa_cella_attuale(struct Giocatore *p) {
+    char nem = ' ', ogg = ' ';
+    
+    if (p->mondo == reale) {
+        struct Zona_MondoReale *z = (struct Zona_MondoReale *)p->posizione;
+        nem = getSimboloNemico(z->nemico);
+        ogg = getSimboloOggetto(z->oggetto);
+        printf("\nTi trovi in: " GRN "%s (Mondo Reale)" RESET "\n", getNomeZona(z->tipo));
+        
+        // Stampa grafica: Mondo Reale in BIANCO (standard)
+        printf("       _______\n");
+        printf("      | " RED "%c" RESET "   " YEL "%c" RESET " |\n", nem, ogg);
+        printf("      |_______|\n\n");
+    } else {
+        struct Zona_SopraSotto *z = (struct Zona_SopraSotto *)p->posizione;
+        nem = getSimboloNemico(z->nemico);
+        printf("\nTi trovi in: " RED "%s (Soprasotto)" RESET "\n", getNomeZona(z->tipo));
+        
+        // Stampa grafica: Soprasotto in ROSSO
+        printf(RED "       _______\n" RESET);
+        printf(RED "      |" RESET " " RED "%c" RESET "     " RED "|\n" RESET, nem);
+        printf(RED "      |_______|\n\n" RESET);
+    }
+}
+
+int nemico_vivo(struct Giocatore *p) {
+    if (p->mondo == reale) {
+        return (((struct Zona_MondoReale*)p->posizione)->nemico != nessun_nemico);
+    } else {
+        return (((struct Zona_SopraSotto*)p->posizione)->nemico != nessun_nemico);
+    }
+}
+
+void raccogli_oggetto(struct Giocatore *p) {
+    if (p->mondo == soprasotto) {
+        printf(RED "Non ci sono oggetti nel Soprasotto!\n" RESET);
+        return;
+    }
+
+    if (nemico_vivo(p)) {
+        printf(RED "Devi prima sconfiggere il nemico per raccogliere l'oggetto!\n" RESET);
+        return;
+    }
+
+    struct Zona_MondoReale *z = (struct Zona_MondoReale *)p->posizione;
+    if (z->oggetto == nessun_oggetto) {
+        printf(YEL "Non c'e' nulla da raccogliere qui.\n" RESET);
+        return;
+    }
+
+    // Ricerca spazio nello zaino
+    for (int i = 0; i < 3; i++) {
+        if (p->zaino[i] == nessun_oggetto) {
+            p->zaino[i] = z->oggetto;
+            printf(GRN "Hai raccolto: %s!\n" RESET, getNomeOggetto(z->oggetto));
+            z->oggetto = nessun_oggetto; // Rimosso dalla mappa
+            return;
+        }
+    }
+    printf(RED "Lo zaino e' pieno!\n" RESET);
+}
+
+void avanza(struct Giocatore *p) {
+    if (p->ha_mosso) { printf(RED "Hai gia' effettuato uno spostamento in questo turno!\n" RESET); return; }
+    if (nemico_vivo(p)) { printf(RED "Non puoi avanzare! C'e' un nemico che ti sbarra la strada!\n" RESET); return; }
+
+    void *prossima = (p->mondo == reale) ? (void*)((struct Zona_MondoReale*)p->posizione)->avanti 
+                                         : (void*)((struct Zona_SopraSotto*)p->posizione)->avanti;
+    if (prossima == NULL) { printf("Fine della mappa raggiunta!\n"); return; }
+
+    p->posizione = prossima;
+    p->ha_mosso = 1;
+    printf(GRN "Sei avanzato alla zona successiva.\n" RESET);
+}
+
+void indietreggia(struct Giocatore *p) {
+    if (p->ha_mosso) { printf(RED "Hai gia' effettuato uno spostamento!\n" RESET); return; }
+    if (nemico_vivo(p)) { printf(RED "Il nemico non ti permette di scappare!\n" RESET); return; }
+
+    void *precedente = (p->mondo == reale) ? (void*)((struct Zona_MondoReale*)p->posizione)->indietro 
+                                           : (void*)((struct Zona_SopraSotto*)p->posizione)->indietro;
+    if (precedente == NULL) { printf("Sei gia' all'inizio della mappa!\n"); return; }
+
+    p->posizione = precedente;
+    p->ha_mosso = 1;
+    printf(GRN "Sei tornato alla zona precedente.\n" RESET);
+}
+
+void cambia_mondo(struct Giocatore *p) {
+    if (p->ha_mosso) { printf(RED "Hai gia' effettuato uno spostamento!\n" RESET); return; }
+    if (nemico_vivo(p)) { printf(RED "Il nemico ti impedisce di aprire un varco!\n" RESET); return; }
+
+    if (p->mondo == reale) {
+        p->posizione = (void*)((struct Zona_MondoReale*)p->posizione)->link_soprasotto;
+        p->mondo = soprasotto;
+    } else {
+        p->posizione = (void*)((struct Zona_SopraSotto*)p->posizione)->link_soprasotto;
+        p->mondo = reale;
+    }
+    p->ha_mosso = 1;
+    printf(RED "VARCO APERTO! Hai cambiato dimensione.\n" RESET);
+}
+
+void stampa_giocatore(struct Giocatore *p) {
+    printf(YEL "\n=== STATISTICHE %s ===\n" RESET, p->nome);
+    printf("Posizione: %s (%s)\n", 
+           getNomeZona((p->mondo == reale) ? ((struct Zona_MondoReale*)p->posizione)->tipo 
+                                           : ((struct Zona_SopraSotto*)p->posizione)->tipo),
+           (p->mondo == reale) ? "Mondo Reale" : "Soprasotto");
+    printf("ATK: %d | DEF: %d | LUCK: %d\n", p->attacco_psichico, p->difesa_psichica, p->fortuna);
+    printf("ZAINO: [%s] [%s] [%s]\n", 
+           getNomeOggetto(p->zaino[0]), getNomeOggetto(p->zaino[1]), getNomeOggetto(p->zaino[2]));
+    printf("---------------------------\n");
+}
+
+int sconfiggi_nemico(struct Giocatore *p) {
+    enum TipoNemico tipo;
+    
+    // Identifichiamo il nemico attuale
+    if (p->mondo == reale) {
+        tipo = ((struct Zona_MondoReale*)p->posizione)->nemico;
+    } else {
+        tipo = ((struct Zona_SopraSotto*)p->posizione)->nemico;
+    }
+
+    // Se è il Demotorzone, abbiamo un vincitore!
+    if (tipo == demotorzone) {
+        printf(GRN "\n************************************************\n" RESET);
+        printf(GRN "              %s HA SCONFITTO IL DEMOTORZONE!\n" RESET, p->nome);
+        printf(GRN "************************************************\n" RESET);
+        return 1;
+    }
+
+    // Per gli altri nemici, applichiamo la probabilità di scomparsa del 50%
+    if (rand() % 100 < 50) {
+        if (p->mondo == reale) {
+            ((struct Zona_MondoReale*)p->posizione)->nemico = nessun_nemico;
+        } else {
+            ((struct Zona_SopraSotto*)p->posizione)->nemico = nessun_nemico;
+        }
+        printf(GRN "Il nemico e' stato sconfitto e scompare dalla zona!\n" RESET);
+    } else {
+        printf(YEL "Il nemico e' a terra, ma la sua presenza infesta ancora la zona...\n" RESET);
+    }
+    
+    return 0;
+}
+
+void trova_demotorzone(struct Giocatore *p) {
+    struct Zona_SopraSotto *temp = prima_zona_soprasotto;
+    int pos_boss = 0;
+    int trovata = 0;
+
+    // Troviamo la posizione del boss nel Soprasotto
+    while (temp != NULL) {
+        if (temp->nemico == demotorzone) {
+            trovata = 1;
+            break;
+        }
+        temp = temp->avanti;
+        pos_boss++;
+    }
+
+    if (!trovata) {
+        printf(YEL "La bussola impazzisce... Il Demotorzone non sembra essere in questa dimensione.\n" RESET);
+        return;
+    }
+
+    if (p->mondo == soprasotto) {
+        // Se il giocatore è nel SS, possiamo essere ancora più precisi
+        printf(YEL "La Bussola brilla! Il Demotorzone si trova in questa dimensione alla zona %d.\n" RESET, pos_boss);
+    } else {
+        printf(YEL "La Bussola punta verso il basso... Il Demotorzone ti aspetta nel Soprasotto alla zona %d.\n" RESET, pos_boss);
+    }
+}
+
+void utilizza_oggetto(struct Giocatore *p) {
+    printf("\n--- ZAINO: SCEGLI OGGETTO ---\n");
+    for (int i = 0; i < 3; i++) {
+        printf("%d) %s\n", i + 1, getNomeOggetto(p->zaino[i]));
+    }
+    printf("Scelta (0 per annullare): ");
+    int o_sc;
+    scanf("%d", &o_sc);
+    while(getchar() != '\n');
+
+    if (o_sc < 1 || o_sc > 3 || p->zaino[o_sc-1] == nessun_oggetto) return;
+
+    enum TipoOggetto obj = p->zaino[o_sc-1];
+    p->zaino[o_sc-1] = nessun_oggetto; // L'oggetto viene consumato
+
+    switch(obj) {
+        case bicicletta:
+            p->ha_mosso = 0; // RESET del flag di movimento!
+            printf(GRN "Hai usato la Bicicletta! Ora puoi effettuare un altro spostamento in questo turno.\n" RESET);
+            break;
+        case maglietta_fuocoinferno:
+            printf("Questa maglietta e' troppo bella per essere usata ora. Meglio in battaglia!\n");
+            p->zaino[o_sc-1] = maglietta_fuocoinferno; // Non la consumiamo
+            break;
+        case bussola:
+            trova_demotorzone(p); // Versione migliorata
+            break;
+        case schitarrata_metallica:
+            printf("Ti senti carico, ma senza nemici e' solo rumore. Conservala per il combattimento!\n");
+            p->zaino[o_sc-1] = schitarrata_metallica; // Non la consumiamo
+            break;
+        default: break;
+    }
+}
+
+int apri_zaino_combattimento(struct Giocatore *p, int *hp_attuale) {
+    printf("\n--- ZAINO ---\n");
+    for (int i = 0; i < 3; i++) printf("%d) %s\n", i + 1, getNomeOggetto(p->zaino[i]));
+    printf("Scegli (0 per tornare): ");
+    int o_sc; scanf("%d", &o_sc); while(getchar() != '\n');
+
+    if (o_sc < 1 || o_sc > 3 || p->zaino[o_sc-1] == nessun_oggetto) return 0;
+
+    enum TipoOggetto obj = p->zaino[o_sc-1];
+    p->zaino[o_sc-1] = nessun_oggetto; // Consuma l'oggetto
+
+    switch(obj) {
+        case bicicletta:
+            printf(GRN "Hai usato la Bici per scappare velocemente dal combattimento!\n" RESET);
+            return 1; // Segnala la fuga
+        case maglietta_fuocoinferno:
+            p->difesa_psichica += 4;
+            *hp_attuale += 4; // Aumenta anche gli HP attuali per lo scontro
+            printf("Difesa aumentata! Guadagni 4 HP extra temporanei.\n");
+            break;
+        case schitarrata_metallica:
+            p->attacco_psichico += 4;
+            printf("METAL! Attacco aumentato di 4 per questo scontro.\n");
+            break;
+        case bussola:
+            trova_demotorzone(p); // Funzione di ricerca nella lista
+            break;
+        default: break;
+    }
+    return 0;
+}
+
+void combatti(struct Giocatore *p) {
+    enum TipoNemico tipo;
+    if (p->mondo == reale) tipo = ((struct Zona_MondoReale*)p->posizione)->nemico;
+    else tipo = ((struct Zona_SopraSotto*)p->posizione)->nemico;
+
+    // Inizializzazione HP e Forza basata sui nuovi valori
+    int hp_n, forza_n;
+    if (tipo == democane) { hp_n = 20; forza_n = 6; }
+    else if (tipo == billi) { hp_n = 45; forza_n = 12; }
+    else if (tipo == demotorzone) { hp_n = 80; forza_n = 20; }
+    else return;
+
+    // Variabili temporanee per bonus e vita
+    int atk_base = p->attacco_psichico;
+    int def_base = p->difesa_psichica;
+    int hp_p = p->difesa_psichica; // Vita = Difesa
+
+    int fine_scontro = 0;
+    while (hp_p > 0 && hp_n > 0 && !fine_scontro) {
+        system("clear");
+        printf(RED "--- COMBATTIMENTO IN CORSO ---" RESET "\n");
+        stampa_cella_attuale(p);
+        printf(YEL "%s" RESET " (HP: %d) VS " RED "%s" RESET " (HP: %d)\n", p->nome, hp_p, getNomeNemico(tipo), hp_n);
+        
+        printf("\n1) Attacca\n2) Apri Zaino\nScelta: ");
+        int c_scelta;
+        scanf("%d", &c_scelta);
+        while(getchar() != '\n');
+
+        if (c_scelta == 1) {
+            // TURNO DEL GIOCATORE
+            if ((rand() % 20) + 1 < p->fortuna) {
+                printf(GRN "COLPITO! Infliggi %d danni!\n" RESET, p->attacco_psichico);
+                hp_n -= p->attacco_psichico;
+            } else {
+                printf(RED "MANCATO!\n" RESET);
+            }
+
+            if (hp_n <= 0) {
+                if (sconfiggi_nemico(p)) exit(0); // Vittoria sul Demotorzone
+                break;
+            }
+
+            // TURNO DEL NEMICO
+            int danno_n = (rand() % forza_n) + 1;
+            printf(RED "Il nemico attacca e ti toglie %d HP!\n" RESET, danno_n);
+            hp_p -= danno_n;
+        } 
+        else if (c_scelta == 2) {
+            // L'apertura dello zaino può portare alla fuga (fine_scontro = 1)
+            fine_scontro = apri_zaino_combattimento(p, &hp_p);
+        }
+        
+        if (hp_p > 0 && !fine_scontro) {
+            printf("\nPremere INVIO per il prossimo round...");
+            getchar();
+        }
+    }
+
+    // Gestione Morte
+    if (hp_p <= 0) {
+        printf(RED "\n%s E' MORTO...\n" RESET, p->nome);
+        // La logica per rimuovere il giocatore andrebbe qui nel loop turni
+    }
+
+    // Ripristino Bonus Temporanei
+    p->attacco_psichico = atk_base;
+    p->difesa_psichica = def_base;
+}
+
+void passa(struct Giocatore *p) {
+    printf(YEL "Il giocatore %s termina il suo turno.\n" RESET, p->nome);
+}
+
+void gioca() {
+    if (mappa_pronta == 0) {
+        printf(RED "Errore: La mappa non è pronta o non è stata validata (Opzione 7 del menu mappa).\n" RESET);
+        return;
+    }
+
+    // 1. Inizializzazione Giocatori alla partenza
+    int num_attivi = 0;
+    for (int i = 0; i < 4; i++) {
+        if (players[i] != NULL) {
+            players[i]->mondo = reale;
+            players[i]->posizione = (void *)prima_zona_mondoreale;
+            players[i]->ha_mosso = 0; 
+            num_attivi++;
+        }
+    }
+
+    if (num_attivi == 0) {
+        printf(RED "Errore: Non ci sono giocatori impostati.\n" RESET);
+        return;
+    }
+
+    int vittoria = 0;
+    
+    // Loop principale della partita: continua finché qualcuno non vince o tutti muoiono
+    while (!vittoria && num_attivi > 0) {
+        for (int i = 0; i < 4; i++) {
+            // Se il puntatore è NULL, il giocatore è morto o non è mai esistito
+            if (players[i] == NULL) continue;
+            if (vittoria) break;
+
+            struct Giocatore *p = players[i];
+            p->ha_mosso = 0; // Reset flag movimento all'inizio di ogni turno
+            int fine_turno = 0;
+
+            while (!fine_turno && !vittoria) {
+                system("clear");
+                printf(YEL "--- TURNO DI %s ---\n" RESET, p->nome);
+                
+                // Visualizzazione grafica della stanza attuale (Rossa se nel Soprasotto)
+                stampa_cella_attuale(p);
+
+                // Controllo e segnalazione nemico bloccante
+                if (nemico_vivo(p)) {
+                    printf(RED "!!! ATTENZIONE: C'è un %s in questa zona !!!\n" RESET, 
+                           getNomeNemico((p->mondo == reale) ? 
+                           ((struct Zona_MondoReale*)p->posizione)->nemico : 
+                           ((struct Zona_SopraSotto*)p->posizione)->nemico));
+                }
+
+                // Menu Azioni Obbligatorie
+                printf(YEL "AZIONI DISPONIBILI:\n" RESET);
+                printf("  [1] Avanza            [5] Stampa Giocatore\n");
+                printf("  [2] Indietreggia      [6] Raccogli Oggetto\n");
+                printf("  [3] Cambia Mondo      [7] Utilizza Oggetto\n");
+                printf("  [4] Combatti          [8] Passa Turno\n");
+                printf(YEL "------------------------------------------------\n" RESET);
+                printf("Scelta: ");
+
+                int scelta_azione;
+                if (scanf("%d", &scelta_azione) != 1) {
+                    while (getchar() != '\n'); // Pulizia buffer in caso di input non numerico
+                    continue;
+                }
+                while (getchar() != '\n');
+
+                switch (scelta_azione) {
+                    case 1: 
+                        avanza(p); 
+                        break;
+                    case 2: 
+                        indietreggia(p); 
+                        break;
+                    case 3: 
+                        cambia_mondo(p); 
+                        break;
+                    case 4: 
+                        if (!nemico_vivo(p)) {
+                            printf(GRN "Non c'è nessuno con cui combattere qui.\n" RESET);
+                        } else {
+                            combatti(p);
+                            
+                            // DOPO IL COMBATTIMENTO: Controllo se il giocatore è morto
+                            if (p->difesa_psichica <= 0) {
+                                printf(RED "\n%s è caduto in battaglia ed è stato eliminato!\n" RESET, p->nome);
+                                free(players[i]);
+                                players[i] = NULL;
+                                num_attivi--;
+                                fine_turno = 1; // Forza la fine del turno
+                            } else if (!nemico_vivo(p)) {
+                                // Se il nemico non c'è più, controlliamo se era il Demotorzone
+                                // Nota: combatti() chiama internamente sconfiggi_nemico()
+                                // Se sconfiggi_nemico ha rilevato il boss, usiamo una logica di uscita
+                                // Per semplicità, controlliamo se il boss è stato rimosso dalla mappa
+                                // (Questa parte è gestita dalla sconfiggi_nemico che restituisce 1)
+                                // Se volessimo essere sicuri, potremmo far restituire un valore a combatti()
+                            }
+                        }
+                        break;
+                    case 5: 
+                        stampa_giocatore(p); 
+                        break;
+                    case 6: 
+                        raccogli_oggetto(p); 
+                        break;
+                    case 7: 
+                        utilizza_oggetto(p); 
+                        break;
+                    case 8: 
+                        passa(p);
+                        fine_turno = 1; 
+                        break;
+                    default: 
+                        printf(RED "Scelta non valida.\n" RESET);
+                }
+
+                // Controllo se tutti i giocatori sono morti dopo l'azione
+                if (num_attivi == 0) {
+                    printf(RED "\nPARTITA FINITA: Tutti i giocatori sono stati sconfitti.\n" RESET);
+                    vittoria = 0; // Nessun vincitore umano
+                    break;
+                }
+
+                if (!fine_turno && !vittoria) {
+                    printf("\nPremere INVIO per continuare...");
+                    getchar();
+                }
+            }
+        }
+    }
+
+    printf(GRN "\n--- FINE DELLA PARTITA ---\n" RESET);
+    printf("Premere INVIO per tornare al menu principale...");
+    getchar();
+}
+
+//PULIZIA DELLA MEMORIA
+void pulisci_risorse() {
+    printf(YEL "\nPulizia della memoria in corso..." RESET "\n");
+
+    // 1. Liberiamo la mappa (scandendo la lista del Mondo Reale)
+    struct Zona_MondoReale *curr_mr = prima_zona_mondoreale;
+    while (curr_mr != NULL) {
+        struct Zona_MondoReale *temp_mr = curr_mr;
+        
+        // Prima di eliminare la zona MR, eliminiamo la sua speculare SS
+        if (curr_mr->link_soprasotto != NULL) {
+            free(curr_mr->link_soprasotto);
+        }
+        
+        curr_mr = curr_mr->avanti;
+        free(temp_mr); // Ora possiamo liberare la zona MR
+    }
+    prima_zona_mondoreale = NULL;
+    prima_zona_soprasotto = NULL;
+
+    // 2. Liberiamo i giocatori (se presenti)
+    for (int i = 0; i < 4; i++) {
+        if (players[i] != NULL) {
+            free(players[i]);
+            players[i] = NULL;
+        }
+    }
+
+    printf(GRN "Memoria pulita correttamente. Arrivederci!" RESET "\n");
 }

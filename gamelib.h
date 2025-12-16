@@ -30,6 +30,10 @@ enum TipoNemico {
     democane, 
     demotorzone 
 };
+enum Mondo {
+  reale,
+  soprasotto
+};
 
 //DICHIARAZIONI STRUCT
 struct Zona_SopraSotto;
@@ -50,10 +54,11 @@ struct Zona_SopraSotto {
 };
 struct Giocatore {
   char nome[26];
-  int mondo; // 0 per mondo reale 1 per soprasotto
+  enum Mondo mondo;
 
-  struct Zona_MondoReale *pos_mondoreale;
-  struct Zona_SopraSotto *pos_soprasotto;
+  void *posizione;
+
+  int ha_mosso; //0 se si può ancora muovere, 1 se ha già usato una funzione di spostamento
 
   // abilità del player da 1 a 20
   int attacco_psichico;
@@ -66,3 +71,6 @@ struct Giocatore {
 //DICHIARAZIONI VARIE FUNZIONI GAMELIB.C
 void printCredits();
 void impostaGioco();
+void printRules();
+void gioca();
+void pulisci_risorse();

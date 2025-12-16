@@ -1,1 +1,3 @@
 stampa a livello grafico della mappa in gamelib.c stampa_mappa()
+aggiunta un opzione per aggiungere fortuna nella creazione del personaggio
+cambiamento nella struct per ottimizzazione codice
