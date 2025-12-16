@@ -697,32 +697,34 @@ void printCredits() {
 
 //STAMPA REGOLE
 void printRules() {
+  system("clear");
   printf(RED "========================================================\n" RESET);
   printf(RED "                  REGOLAMENTO DI GIOCO                  \n" RESET);
   printf(RED "========================================================\n" RESET);
 
-  printf(YEL "\n1. CREAZIONE E PROFILI" RESET "\n");
-  printf("   - Ogni giocatore lancia un dado da 20 per determinare\n");
-  printf("     Attacco Psichico, Difesa Psichica e Fortuna.\n");
-  printf("   - Puoi scegliere un bonus: +3 ATK/-3 DEF o -3 ATK/+3 DEF o -3 ATK/DEF +4 LUCK.\n");
-  printf("   - " RED "UndiciVirgolaCinque" RESET ": Solo un giocatore può sceglierlo.\n");
-  printf("     Ottiene +4 ATK/DEF ma subisce -7 alla Fortuna.\n");
+  printf(YEL "\n1. ESPLORAZIONE E MOVIMENTO" RESET "\n");
+  printf("   - Puoi muoverti tra il " GRN "Mondo Reale" RESET " e il " RED "Soprasotto" RESET ".\n");
+  printf("   - Ogni turno puoi effettuare " YEL "UNA sola azione di movimento" RESET ".\n");
+  printf("   - " RED "ATTENZIONE:" RESET " Se nella zona è presente un nemico vivo,\n");
+  printf("     i movimenti (Avanza/Indietro/Cambia Mondo) sono BLOCCATI.\n");
 
-  printf(YEL "\n2. ESPLORAZIONE E MAPPA" RESET "\n");
-  printf("   - Ti muoverai tra due mondi: il " GRN "Mondo Reale" RESET " e il " RED "Soprasotto" RESET ".\n");
-  printf("   - Ogni zona ha un gemello speculare nell'altra dimensione.\n");
-  printf("   - Puoi muoverti avanti o indietro lungo la mappa.\n");
+  printf(YEL "\n2. COMBATTIMENTO" RESET "\n");
+  printf("   - La tua Vita (HP) è uguale alla tua " GRN "Difesa Psichica" RESET ".\n");
+  printf("   - " YEL "Attacco:" RESET " Lanci un D20. Se il risultato è MINORE della tua\n");
+  printf("     statistica " GRN "Fortuna" RESET ", colpisci il nemico.\n");
+  printf("   - Se sconfiggi un nemico, ha il 50%% di probabilità di sparire.\n");
+  printf("   - Se i tuoi HP scendono a 0, sarai eliminato definitivamente.\n");
 
-  printf(YEL "\n3. OGGETTI E NEMICI" RESET "\n");
-  printf("   - " GRN "Mondo Reale" RESET ": Trovi oggetti (Bici, Bussola, ecc.) e nemici\n");
-  printf("     meno pericolosi come Billi o i Democani.\n");
-  printf("   - " RED "Soprasotto" RESET ": Dimensione mortale senza oggetti.\n");
-  printf("     Qui si nasconde il temibile " RED "Demotorzone" RESET ".\n");
+  printf(YEL "\n3. OGGETTI (Utilizzabili dal Menu o in Combat)" RESET "\n");
+  printf("   - " GRN "Bicicletta:" RESET " Reset flag movimento (fuori) o Fuga (in combat).\n");
+  printf("   - " GRN "Bussola:" RESET " Rivela la distanza esatta dal Demotorzone.\n");
+  printf("   - " GRN "Maglietta Fuocoinferno:" RESET " Bonus +4 DIF/HP (solo in combat).\n");
+  printf("   - " GRN "Schitarrata Metallica:" RESET " Bonus +4 ATK (solo in combat).\n");
+  printf("   - " RED "Nota:" RESET " Puoi portare massimo 3 oggetti nello zaino.\n");
 
-  printf(YEL "\n4. OBIETTIVO E VITTORIA" RESET "\n");
-  printf("   - Sopravvivi agli incontri e gestisci bene il tuo zaino.\n");
-  printf("   - La vittoria si ottiene sconfiggendo il " RED "Demotorzone" RESET ".\n");
-  printf("   - Se i tuoi parametri vitali si azzerano, verrai eliminato.\n");
+  printf(YEL "\n4. OBIETTIVO FINALE" RESET "\n");
+  printf("   - Trova il " RED "Demotorzone" RESET " nel Soprasotto e sconfiggilo.\n");
+  printf("   - Il boss ha 80 HP e un attacco molto potente. Preparati!\n");
 
   printf(RED "\n========================================================\n" RESET);
   printf(GRN "Premere INVIO per tornare al menu principale...");
