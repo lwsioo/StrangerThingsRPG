@@ -11,12 +11,12 @@ int main() {
     do {
       system("clear");
       printf("\n" RED "======================================\n" RESET);
-      printf(RED "              COSESTRANE           " RESET "\n");
+      printf(RED "              COSE STRANE             " RESET "\n");
       printf(RED "======================================" RESET "\n");
-      printf("  [1] 🛠️  Imposta gioco\n");
-      printf("  [2] 🕹️  Gioca\n");
-      printf("  [3] ❌ Termina gioco\n");
-      printf("  [4] 📜 Visualizza crediti\n");
+      printf("  [1] > IMPOSTA GIOCO\n");
+      printf("  [2] > GIOCA\n");
+      printf("  [3] > TERMINA GIOCO\n");
+      printf("  [4] > VISUALIZZA CREDITI\n");
       printf(YEL "--------------------------------------" RESET "\n");
       printf("  Scelta: ");
 
@@ -24,7 +24,7 @@ int main() {
         choice = 0;
       }
 
-      while (getchar() != '\n');
+      while (getchar() != '\n'); // Pulisce il buffer da invio o caratteri errati
     } while (choice < 1 || choice > 4);
 
     switch (choice) {
@@ -34,7 +34,8 @@ int main() {
       break;
     case 2:
       system("clear");
-      printf("gioca...\n");
+      // Qui aggiungeremo il controllo if (mappa_pronta == 1) in futuro
+      printf("Avvio sessione di gioco...\n");
       break;
     case 3:
       system("clear");
@@ -44,8 +45,8 @@ int main() {
       for (int i = 0; i < 3; i++) {
         clock_t stop = clock() + (CLOCKS_PER_SEC / 2);
         while (clock() < stop) {
+          // Attesa attiva
         }
-
         printf(".");
         fflush(stdout);
       }
@@ -57,7 +58,6 @@ int main() {
       printCredits();
       break;
     }
-
   } while (choice != 3);
 
   return 0;
