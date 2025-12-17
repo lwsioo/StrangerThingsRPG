@@ -61,7 +61,3 @@ Le modifiche sopra elencate sono state realizzate con l’obiettivo di:
 - Ridurre la dipendenza eccessiva dal caso nelle statistiche iniziali.
 - Introdurre un sistema di combattimento più dinamico e coerente.
 - Fornire una consultazione rapida delle regole direttamente in-game.
-
----
-
-*Progetto sviluppato come estensione delle specifiche originali, con particolare attenzione a bilanciamento, chiarezza e qualità dell’esperienza utente.*
