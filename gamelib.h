@@ -1,10 +1,10 @@
-//COLORI PER I PRINT IN CONSOLE
+// COLORI PER I PRINT IN CONSOLE
 #define RED   "\x1B[31m"
 #define GRN   "\x1B[32m"
 #define YEL   "\x1B[33m"
 #define RESET "\x1B[0m"
 
-//ENUM PER I VARI TIPI
+// ENUM PER I VARI TIPI
 enum TipoOggetto {
   nessun_oggetto,
   bicicletta,
@@ -35,7 +35,7 @@ enum Mondo {
   soprasotto
 };
 
-//DICHIARAZIONI STRUCT
+// DICHIARAZIONI STRUCT
 struct Zona_SopraSotto;
 struct Zona_MondoReale {
     enum TipoZona tipo;
@@ -68,7 +68,7 @@ struct Giocatore {
   enum TipoOggetto zaino[3];
 };
 
-//DICHIARAZIONI VARIE FUNZIONI GAMELIB.C
+// DICHIARAZIONI VARIE FUNZIONI GAMELIB.C
 void printCredits();
 void impostaGioco();
 void printRules();

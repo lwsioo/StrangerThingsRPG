@@ -25,7 +25,7 @@ int main() {
         choice = 0;
       }
 
-      while (getchar() != '\n'); // Pulisce il buffer da invio o caratteri errati
+      while (getchar() != '\n'); // pulizia buffer
     } while (choice < 1 || choice > 5);
 
     switch (choice) {
@@ -41,7 +41,7 @@ int main() {
       for (int i = 0; i < 3; i++) {
         clock_t stop = clock() + (CLOCKS_PER_SEC / 2);
         while (clock() < stop) {
-          // Attesa attiva
+          // attesa
         }
         printf(".");
         fflush(stdout);
@@ -58,7 +58,7 @@ int main() {
         pulisci_risorse();
         clock_t stop = clock() + (CLOCKS_PER_SEC / 2);
         while (clock() < stop) {
-          // Attesa attiva
+          // attesa
         }
         printf(".");
         fflush(stdout);
