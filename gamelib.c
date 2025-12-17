@@ -6,6 +6,8 @@
 
 struct Giocatore *players[4] = {NULL, NULL, NULL, NULL};
 
+static int usa_bici = 0;
+
 // GESTIONE VINCITORI
 static char ultimi_vincitori[3][26] = {"Nessuno", "Nessuno", "Nessuno"};
 static int indice_vincitore = 0;
@@ -802,17 +804,16 @@ void avanza(struct Giocatore *p) {
     printf(RED "Hai gia' effettuato uno spostamento in questo turno!\n" RESET);
     return;
   }
-  if (nemico_vivo(p)) {
-    printf(
-        RED
-        "Non puoi avanzare! C'e' un nemico che ti sbarra la strada!\n" RESET);
+  // Controllo bypass nemico tramite bici
+  if (nemico_vivo(p) && !usa_bici) {
+    printf(RED "Non puoi avanzare! C'e' un nemico che ti sbarra la strada!\n" RESET);
     return;
   }
 
-  void *prossima =
-      (p->mondo == reale)
+  void *prossima = (p->mondo == reale)
           ? (void *)((struct Zona_MondoReale *)p->posizione)->avanti
           : (void *)((struct Zona_SopraSotto *)p->posizione)->avanti;
+  
   if (prossima == NULL) {
     printf("Fine della mappa raggiunta!\n");
     return;
@@ -820,7 +821,8 @@ void avanza(struct Giocatore *p) {
 
   p->posizione = prossima;
   p->ha_mosso = 1;
-  printf(GRN "Sei avanzato alla zona successiva.\n" RESET);
+  usa_bici = 0; // Reset dell'effetto bici
+  printf(GRN "Ti sei spostato in avanti.\n" RESET);
 }
 
 void indietreggia(struct Giocatore *p) {
@@ -828,15 +830,16 @@ void indietreggia(struct Giocatore *p) {
     printf(RED "Hai gia' effettuato uno spostamento!\n" RESET);
     return;
   }
-  if (nemico_vivo(p)) {
+  // controllo bypass nemico tramite bici
+  if (nemico_vivo(p) && !usa_bici) {
     printf(RED "Il nemico non ti permette di scappare!\n" RESET);
     return;
   }
 
-  void *precedente =
-      (p->mondo == reale)
+  void *precedente = (p->mondo == reale)
           ? (void *)((struct Zona_MondoReale *)p->posizione)->indietro
           : (void *)((struct Zona_SopraSotto *)p->posizione)->indietro;
+  
   if (precedente == NULL) {
     printf("Sei gia' all'inizio della mappa!\n");
     return;
@@ -844,6 +847,7 @@ void indietreggia(struct Giocatore *p) {
 
   p->posizione = precedente;
   p->ha_mosso = 1;
+  usa_bici = 0; // reset dell'effetto bici
   printf(GRN "Sei tornato alla zona precedente.\n" RESET);
 }
 
@@ -852,21 +856,21 @@ void cambia_mondo(struct Giocatore *p) {
     printf(RED "Hai gia' effettuato uno spostamento!\n" RESET);
     return;
   }
-  if (nemico_vivo(p)) {
+  // controllo bypass nemico tramite bici
+  if (nemico_vivo(p) && !usa_bici) {
     printf(RED "Il nemico ti impedisce di aprire un varco!\n" RESET);
     return;
   }
 
   if (p->mondo == reale) {
-    p->posizione =
-        (void *)((struct Zona_MondoReale *)p->posizione)->link_soprasotto;
+    p->posizione = (void *)((struct Zona_MondoReale *)p->posizione)->link_soprasotto;
     p->mondo = soprasotto;
   } else {
-    p->posizione =
-        (void *)((struct Zona_SopraSotto *)p->posizione)->link_soprasotto;
+    p->posizione = (void *)((struct Zona_SopraSotto *)p->posizione)->link_soprasotto;
     p->mondo = reale;
   }
   p->ha_mosso = 1;
+  usa_bici = 0; // reset dell'effetto bici
   printf(RED "VARCO APERTO! Hai cambiato dimensione.\n" RESET);
 }
 
@@ -966,23 +970,24 @@ void utilizza_oggetto(struct Giocatore *p) {
     return;
 
   enum TipoOggetto obj = p->zaino[o_sc - 1];
-  p->zaino[o_sc - 1] = nessun_oggetto; // l'oggetto viene consumato
+  p->zaino[o_sc - 1] = nessun_oggetto; 
 
   switch (obj) {
   case bicicletta:
-    p->ha_mosso = 0; // reset del flag di movimento
-    printf(GRN "Hai usato la Bicicletta! Ora puoi effettuare un altro spostamento in questo turno.\n" RESET);
+    p->ha_mosso = 0; // reset flag movimento
+    usa_bici = 1;    // attiva il bypass del nemico
+    printf(GRN "Hai usato la Bicicletta! Ora puoi ignorare i nemici per un movimento.\n" RESET);
     break;
   case maglietta_fuocoinferno:
     printf("Questa maglietta e' troppo bella per essere usata ora. Meglio in battaglia!\n");
-    p->zaino[o_sc - 1] = maglietta_fuocoinferno; // non viene consumata
+    p->zaino[o_sc - 1] = maglietta_fuocoinferno; 
     break;
   case bussola:
     trova_demotorzone(p);
     break;
   case schitarrata_metallica:
     printf("Ti senti carico, ma senza nemici e' solo rumore. Conservala per il combattimento!\n");
-    p->zaino[o_sc - 1] = schitarrata_metallica; // non viene consumata
+    p->zaino[o_sc - 1] = schitarrata_metallica; 
     break;
   default:
     break;
@@ -1009,14 +1014,13 @@ int apri_zaino_combattimento(struct Giocatore *p, int *hp_attuale) {
     switch(obj) {
         case bicicletta:
             printf(GRN "Fuga riuscita! Usi la bici per seminare il nemico.\n" RESET);
+            usa_bici = 1; // imposta il bypass per lo spostamento post-fuga
             return 1; 
         case maglietta_fuocoinferno:
-            // potenziamento sostanziale
             *hp_attuale += 10; 
             printf(GRN "La maglietta ti infonde coraggio! +10 HP temporanei.\n" RESET);
             break;
         case schitarrata_metallica:
-            // potenziamento sostanziale
             p->attacco_psichico += 10; 
             printf(GRN "L'assolo di chitarra aumenta il tuo potere! +10 ATK per questo scontro.\n" RESET);
             break;
@@ -1149,6 +1153,7 @@ void gioca() {
 
       struct Giocatore *p = players[i];
       p->ha_mosso = 0; // reset flag movimento all'inizio di ogni turno
+      usa_bici = 0;
       int fine_turno = 0;
 
       while (!fine_turno && !vittoria) {
