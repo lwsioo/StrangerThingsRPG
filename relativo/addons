@@ -1,3 +1,167 @@
-stampa a livello grafico della mappa in gamelib.c stampa_mappa()
-aggiunta un opzione per aggiungere fortuna nella creazione del personaggio
-cambiamento nella struct per ottimizzazione codice
+FUNZIONALITÀ AGGIUNTIVE IMPLEMENTATE:
+
+1. STAMPA MAPPA GRAFICA (stampa_mappa_grafica())
+   - Visualizzazione ASCII della mappa a blocchi di 5 zone
+   - Mostra contemporaneamente Mondo Reale e Soprasotto
+   - Rappresentazione visiva nemici e oggetti con simboli colorati
+   - Legenda per i simboli (b=Bici, m=Maglia, o=Bussola, j=Chitarra, W=Billi, C=Democane, D=Demotorzone)
+
+2. PERSONAGGIO SPECIALE "UndiciVirgolaCinque"
+   - Opzione bonus 4 disponibile solo una volta per partita
+   - Conferisce +4 ATK, +4 DEF, -7 LUCK
+   - Cambia automaticamente il nome del giocatore in "UndiciVirgolaCinque"
+   - Implementa una caratteristica tematica della serie TV
+
+3. SISTEMA STATISTICHE AVANZATO IN COMBATTIMENTO
+   - HP temporanei con Maglietta Fuocoinferno (+10 HP)
+   - ATK temporaneo con Schitarrata Metallica (+10 ATK)
+   - Recupero automatico statistiche base dopo ogni scontro vinto
+   - Sistema di danni nemici basato su D20
+
+4. VISUALIZZAZIONE GRAFICA DELLE STANZE
+   - Rappresentazione ASCII delle celle durante il gioco
+   - Mostra nemici e oggetti presenti nella zona corrente
+   - Differenzia visivamente Mondo Reale e Soprasotto
+
+5. MENU REGOLE (printRules())
+   - Sezione "Regole" aggiunta nel menu principale
+   - Spiegazione dettagliata di tutte le meccaniche di gioco
+   - Include: creazione personaggio, esplorazione, combattimento, equipaggiamento, vittoria
+
+6. EFFETTO BICI AVANZATO
+   - In esplorazione: permette di ignorare i nemici per un movimento
+   - In combattimento: opzione di fuga immediata
+   - Consuma l'oggetto dopo l'uso
+   - Reset automatico dopo ogni turno
+
+7. SISTEMA OGGETTI DETTAGLIATO (effetti specifici)
+   
+   a) BICICLETTA:
+      - Modalità ESPLORAZIONE:
+        * Attiva flag usa_bici = 1
+        * Consente di ignorare nemici bloccanti per un movimento
+        * Permite di muoversi anche se c'è un nemico vivo nella zona
+        * Reset automatico dopo lo spostamento successivo
+      - Modalità COMBATTIMENTO:
+        * Attiva fuga immediata dal combattimento
+        * Termina lo scontro senza conseguenze
+        * Consuma l'oggetto immediatamente
+   
+   b) BUSSOLA:
+      - Individua la posizione esatta del Demotorzone
+      - Funziona sia in Mondo Reale che nel Soprasotto
+      - In Mondo Reale: indica che il boss è nel Soprasotto
+      - Nel Soprasotto: mostra la zona precisa (es. "zona 7: Laboratorio")
+      - Messaggio tematico: "La Bussola brilla!" / "punta in basso..."
+      - Consuma l'oggetto dopo l'uso
+   
+   c) MAGLIETTA FUOCOINFERNO:
+      - Utilizzabile solo in combattimento
+      - Conferisce +10 HP temporanei allo scontro corrente
+      - HP temporanei si aggiungono a HP attuale
+      - Bonus si applica solo per lo scontro in corso
+      - Messaggio: "La maglietta ti infonde coraggio!"
+      - Consuma l'oggetto dopo l'uso
+      - HP tornano al valore base alla fine del combattimento
+   
+   d) SCHITARRATA METALLICA:
+      - Utilizzabile solo in combattimento
+      - Conferisce +10 ATK temporanei per lo scontro corrente
+      - Aumenta il danno inflitto ai nemici in tutti gli attacchi
+      - Bonus si applica solo per lo scontro in corso
+      - Messaggio: "L'assolo aumenta il tuo potere!"
+      - Consuma l'oggetto dopo l'uso
+      - ATK torna al valore base alla fine del combattimento
+
+7. SISTEMA DI GESTIONE NEMICI AVANZATO
+   - Probabilità di scomparsa nemici dopo la sconfitta
+   - Feedback narrativo diverso tra Mondo Reale e Soprasotto
+   - Nemici possono scappare invece di essere eliminati
+
+8. INTERFACCIA UTENTE MIGLIORATA
+   - Colori ANSI per distinguere elementi (RED/YEL/GRN)
+   - Messaggi di feedback dettagliati per ogni azione
+   - Pulizia schermo automatica con system("clear")
+   - Animazioni di caricamento per avvio/chiusura
+
+9. CONTROLLO INPUT RIGOROSO
+   - Validazione di tutti gli input da tastiera
+   - Gestione del buffer per evitare loop infiniti
+   - Messaggi di errore chiari per input non validi
+   - Reinserimento automatico in caso di errori
+
+REQUISITI DEL PROFESSORE IMPLEMENTATI:
+
+10. ORDINE TURNI CASUALI (Implementato)
+    - Il professore richiede: "l'ordine dei giocatori in ogni turno deve essere casuale"
+    - Implementato tramite funzione shuffle_indices() con algoritmo Fisher-Yates
+    - All'inizio di ogni turno:
+      * Raccoglie gli indici dei giocatori attivi
+      * Mescola casualmente l'ordine dei giocatori
+      * I giocatori eseguono le azioni in ordine casuale diverso ogni turno
+    - Il loop principale di gioco itera attraverso l'array di indici mescolato
+
+OTTIMIZZAZIONI STRUTTURALI:
+
+11. PUNTATORE VOID *posizione IN STRUCT GIOCATORE
+     - Permette di puntare sia a Zona_MondoReale che Zona_SopraSotto
+     - Riduce ridondanza nel codice e ottimizza memoria
+     - Gestito tramite casting appropriato durante l'uso
+
+12. FLAG ha_mosso PER GESTIONE MOVIMENTI
+     - Traccia se il giocatore ha già effettuato uno spostamento
+     - Reset automatico all'inizio di ogni turno
+     - Previene movimenti multipli nello stesso turno
+
+BILANCIAMENTO GIOCO (Implementato per migliorare giocabilità):
+
+13. STATISTICHE GIOCATORE AUMENTATE
+     - Difesa base: range 4-20 → 8-24 (media 16 HP invece di 12)
+     - Maggior sopravvivenza ai danni dei nemici
+     - Permette di commettere più errori prima di morire
+
+14. BILANCIAMENTO NEMICI
+
+    a) DEMOCANE (Mondo Reale e Soprasotto):
+       - HP: 20 → 25 (piè HP per rendere il combattimento più lungo)
+       - Forza: 6 (invariata)
+       - Spawn Mondo Reale: 40% → 35%
+       - Spawn Soprasotto: 50% → 33% (1/3 probabilità)
+
+    b) BILLI (Mondo Reale):
+       - HP: 30 (invariato)
+       - Forza: 10 (invariato)
+       - Spawn Mondo Reale: 20% → 15% (nemico impegnativo, spawn ridotto)
+
+    c) DEMOTORZONE (Boss finale nel Soprasotto):
+       - HP: 60 → 45 (ridotto da 5 a 3-4 colpi per ucciderlo)
+       - Forza: 15 → 12 (non letale in un colpo con DEF media)
+       - Spawn: 1 per partita nel Soprasotto (invariato)
+       - Rendere il boss sconfiggibile con un buon build
+
+15. BILANCIAMENTO OGGETTI
+
+    a) BICICLETTA:
+       - Spawn: 20% → 15% (più rara ma molto potente)
+       - Effetto: fuga da combattimento o bypass nemici
+
+    b) BUSSOLA:
+       - Spawn: 20% → 25% (più comune, utility fondamentale)
+       - Effetto: localizza Demotorzone
+
+    c) MAGLIETTA FUOCOINFERNO:
+       - Spawn: 20% → 25% (più comune, cruciale per sopravvivere)
+       - Effetto: +10 HP temporanei
+
+    d) SCHITARRATA METALLICA:
+       - Spawn: 10% → 15% (più comune ma ancora rara)
+       - Effetto: +10 ATK temporanei
+
+    e) NESSUN OGGETTO:
+       - Spawn: 30% → 20% (più probabilità di trovare oggetti utili)
+
+16. BILANCIAMENTO SPAWN NEMICI MONDO REALE
+     - Nessun nemico: 40% → 50% (più zone sicure)
+     - Democane: 40% → 35%
+     - Billi: 20% → 15% (nemico pericoloso, spawn ridotto)
+     - Riduzione globale della pressione nemica nel MR

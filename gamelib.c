@@ -12,6 +12,16 @@ static int usa_bici = 0;
 static char ultimi_vincitori[3][26] = {"Nessuno", "Nessuno", "Nessuno"};
 static int indice_vincitore = 0;
 
+// shuffle dei giocatori
+static void shuffle_indices(int *array, int size) {
+  for (int i = size - 1; i > 0; i--) {
+    int j = rand() % (i + 1);
+    int temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+}
+
 // GESTIONE MAPPA
 static int undici_scelto = 0;
 struct Zona_MondoReale *prima_zona_mondoreale = NULL;
@@ -133,31 +143,31 @@ void genera_mappa() {
     nuova_mondoreale->tipo = rand() % 10;
     nuova_soprasotto->tipo = nuova_mondoreale->tipo;
 
-    int r_nemico = rand() % 10;
-    if (r_nemico < 4)
-      nuova_mondoreale->nemico = nessun_nemico; // 40% probabilità
-    else if (r_nemico < 8)
-      nuova_mondoreale->nemico = democane; // 40% probabilità
+    int r_nemico = rand() % 20;
+    if (r_nemico < 10)
+      nuova_mondoreale->nemico = nessun_nemico; // 50% probabilità
+    else if (r_nemico < 17)
+      nuova_mondoreale->nemico = democane; // 35% probabilità
     else
-      nuova_mondoreale->nemico = billi; // 20% probabilità
+      nuova_mondoreale->nemico = billi; // 15% probabilità
 
     if (i == stanza_demotorzone && !demotorzone_inserito) {
       nuova_soprasotto->nemico = demotorzone;
     } else {
-      nuova_soprasotto->nemico = (rand() % 2 == 0) ? nessun_nemico : democane;
+      nuova_soprasotto->nemico = (rand() % 3 == 0) ? democane : nessun_nemico;
     }
 
-    int r_oggetto = rand() % 10;
-    if (r_oggetto < 2) {
-      nuova_mondoreale->oggetto = bicicletta; // 20% probabilità
-    } else if (r_oggetto < 4) {
-      nuova_mondoreale->oggetto = bussola; // 20% probabilità
-    } else if (r_oggetto < 6) {
-      nuova_mondoreale->oggetto = maglietta_fuocoinferno; // 20% probabilità
-    } else if (r_oggetto < 7) {
-      nuova_mondoreale->oggetto = schitarrata_metallica; // 10% probabilità
+    int r_oggetto = rand() % 20;
+    if (r_oggetto < 3) {
+      nuova_mondoreale->oggetto = bicicletta; // 15% probabilità
+    } else if (r_oggetto < 8) {
+      nuova_mondoreale->oggetto = bussola; // 25% probabilità
+    } else if (r_oggetto < 13) {
+      nuova_mondoreale->oggetto = maglietta_fuocoinferno; // 25% probabilità
+    } else if (r_oggetto < 16) {
+      nuova_mondoreale->oggetto = schitarrata_metallica; // 15% probabilità
     } else {
-      nuova_mondoreale->oggetto = nessun_oggetto; // 30% probabilità
+      nuova_mondoreale->oggetto = nessun_oggetto; // 20% probabilità
     }
 
     nuova_mondoreale->link_soprasotto = nuova_soprasotto;
@@ -569,6 +579,7 @@ void menu_mappa() {
 
 void impostaGioco() {
   int nPlayers = 0;
+  svuota_mappa();
 
   // pulizia memoria se il gioco viene impostato più volte
   for (int i = 0; i < 4; i++) {
@@ -614,27 +625,42 @@ void impostaGioco() {
 
     strcpy(players[i]->nome, nome_temp);
 
-    // GENERAZIONE STATISTICHE MENO RANDOM
     // il minimo è impostato in base al malus massimo possibile per ogni skill
-    // ATK e DEF possono subire -3, quindi minimo 4 (4-3 = 1)
+    // ATK e DEF possono subire -3, quindi minimo 8 (8-3 = 5)
     // LUCK può subire -7, quindi minimo 8 (8-7 = 1)
     players[i]->attacco_psichico = (rand() % 17) + 4; // range 4-20
-    players[i]->difesa_psichica = (rand() % 17) + 4;  // range 4-20
+    players[i]->difesa_psichica = (rand() % 17) + 8;  // range 8-24 (aumentato per migliorare giocabilità)
     players[i]->fortuna = (rand() % 13) + 8;          // range 8-20
 
     printf(GRN "Statistiche base: ATK:%d, DEF:%d, LUCK:%d\n" RESET, 
            players[i]->attacco_psichico, players[i]->difesa_psichica, players[i]->fortuna);
 
     int scelta;
-    printf("\nScegli un bonus (le statistiche non scenderanno sotto lo 0):\n");
-    printf("1) +3 ATK / -3 DEF\n");
-    printf("2) -3 ATK / +3 DEF\n");
-    printf("3) -3 ATK/DEF +4 LUCK\n");
-    if (!undici_scelto)
-      printf("4) Diventa UndiciVirgolaCinque (+4 ATK/DEF, -7 LUCK)\n");
-    printf("Scelta: ");
-    scanf("%d", &scelta);
-    while (getchar() != '\n');
+    int scelta_valida = 0;
+    do {
+      printf("\nScegli un bonus:\n");
+      printf("1) +3 ATK / -3 DEF\n");
+      printf("2) -3 ATK / +3 DEF\n");
+      printf("3) -3 ATK/DEF +4 LUCK\n");
+      if (!undici_scelto)
+        printf("4) Diventa UndiciVirgolaCinque (+4 ATK/DEF, -7 LUCK)\n");
+      
+      printf("Scelta: ");
+      if (scanf("%d", &scelta) != 1) {
+        printf(RED "Errore: Inserire un numero.\n" RESET);
+        while (getchar() != '\n');
+        continue;
+      }
+      while (getchar() != '\n');
+
+      if (scelta >= 1 && scelta <= 3) {
+        scelta_valida = 1;
+      } else if (scelta == 4 && !undici_scelto) {
+        scelta_valida = 1;
+      } else {
+        printf(RED "Scelta non valida! Riprova.\n" RESET);
+      }
+    } while (!scelta_valida);
 
     // applicazione bonus con controllo underflow
     switch (scelta) {
@@ -702,7 +728,7 @@ void printRules() {
   printf(RED "========================================================\n" RESET);
 
   printf(YEL "\n1. CREAZIONE PERSONAGGIO" RESET "\n");
-  printf("   - Le statistiche (ATK, DEF, LUCK) sono generate con un D20.\n");
+  printf("   - Le statistiche (ATK, DEF, LUCK) sono generate con un D20 (tranne la difesa che arriva massimo a 24 per aumentare la giocabilità).\n");
   printf("   - La tua " GRN "DIFESA" RESET " rappresenta anche i tuoi " GRN "Punti Vita (HP)" RESET ".\n");
   printf("   - I Bonus permettono di specializzare il personaggio in base allo stile.\n");
 
@@ -719,14 +745,14 @@ void printRules() {
   printf("   - Se i tuoi HP arrivano a 0 durante lo scontro, sarai eliminato.\n");
 
   printf(YEL "\n4. EQUIPAGGIAMENTO (ZAINO MAX 3 SLOT)" RESET "\n");
-  printf("   - " GRN "BICICLETTA:" RESET " Permette di fuggire dal combat o muoversi due volte.\n");
+  printf("   - " GRN "BICICLETTA:" RESET " Permette di fuggire dal combattimento o muoversi due volte.\n");
   printf("   - " GRN "BUSSOLA:" RESET " Indica la distanza precisa dal Demotorzone nel Soprasotto.\n");
   printf("   - " GRN "MAGLIETTA:" RESET " Bonus massiccio di " YEL "+10 HP" RESET " temporanei in battaglia.\n");
   printf("   - " GRN "CHITARRA:" RESET " Bonus massiccio di " YEL "+10 ATK" RESET " temporaneo in battaglia.\n");
 
   printf(YEL "\n5. VITTORIA" RESET "\n");
   printf("   - La partita termina quando il primo giocatore sconfigge il\n");
-  printf("     temibile " RED "Demotorzone (60 HP / 15 Forza)" RESET " nel Soprasotto.\n");
+  printf("     temibile " RED "Demotorzone (45 HP / 12 Forza)" RESET " nel Soprasotto.\n");
 
   printf(RED "\n========================================================\n" RESET);
   printf(GRN "Premere INVIO per tornare al menu principale...");
@@ -956,80 +982,79 @@ void trova_demotorzone(struct Giocatore *p) {
     }
 }
 
-void utilizza_oggetto(struct Giocatore *p) {
-  printf("\n--- ZAINO: SCEGLI OGGETTO ---\n");
-  for (int i = 0; i < 3; i++) {
-    printf("%d) %s\n", i + 1, getNomeOggetto(p->zaino[i]));
-  }
-  printf("Scelta (0 per annullare): ");
+int gestisci_zaino(struct Giocatore *p, int *hp_attuale, int isFighting) {
   int o_sc;
-  scanf("%d", &o_sc);
-  while (getchar() != '\n');
-
-  if (o_sc < 1 || o_sc > 3 || p->zaino[o_sc - 1] == nessun_oggetto)
-    return;
-
-  enum TipoOggetto obj = p->zaino[o_sc - 1];
-  p->zaino[o_sc - 1] = nessun_oggetto; 
-
-  switch (obj) {
-  case bicicletta:
-    p->ha_mosso = 0; // reset flag movimento
-    usa_bici = 1;    // attiva il bypass del nemico
-    printf(GRN "Hai usato la Bicicletta! Ora puoi ignorare i nemici per un movimento.\n" RESET);
-    break;
-  case maglietta_fuocoinferno:
-    printf("Questa maglietta e' troppo bella per essere usata ora. Meglio in battaglia!\n");
-    p->zaino[o_sc - 1] = maglietta_fuocoinferno; 
-    break;
-  case bussola:
-    trova_demotorzone(p);
-    break;
-  case schitarrata_metallica:
-    printf("Ti senti carico, ma senza nemici e' solo rumore. Conservala per il combattimento!\n");
-    p->zaino[o_sc - 1] = schitarrata_metallica; 
-    break;
-  default:
-    break;
-  }
-}
-
-int apri_zaino_combattimento(struct Giocatore *p, int *hp_attuale) {
-    int o_sc;
-    printf("\n--- ZAINO ---\n");
-    for (int i = 0; i < 3; i++) printf("%d) %s\n", i + 1, getNomeOggetto(p->zaino[i]));
+  do {
+    printf("\n--- ZAINO (%s) ---\n", isFighting ? "COMBATTIMENTO" : "ESPLORAZIONE");
+    for (int i = 0; i < 3; i++) {
+      printf("%d) %s\n", i + 1, getNomeOggetto(p->zaino[i]));
+    }
     printf("Scegli (0 per tornare): ");
-    
+
     if (scanf("%d", &o_sc) != 1) {
-        while (getchar() != '\n');
-        return 0;
+      printf(RED "Inserire un numero valido.\n" RESET);
+      while (getchar() != '\n');
+      o_sc = -1;
+      continue;
     }
     while (getchar() != '\n');
 
-    if (o_sc < 1 || o_sc > 3 || p->zaino[o_sc-1] == nessun_oggetto) return 0;
+    if (o_sc == 0) return 0;
 
-    enum TipoOggetto obj = p->zaino[o_sc-1];
-    p->zaino[o_sc-1] = nessun_oggetto; 
-
-    switch(obj) {
-        case bicicletta:
-            printf(GRN "Fuga riuscita! Usi la bici per seminare il nemico.\n" RESET);
-            usa_bici = 1; // imposta il bypass per lo spostamento post-fuga
-            return 1; 
-        case maglietta_fuocoinferno:
-            *hp_attuale += 10; 
-            printf(GRN "La maglietta ti infonde coraggio! +10 HP temporanei.\n" RESET);
-            break;
-        case schitarrata_metallica:
-            p->attacco_psichico += 10; 
-            printf(GRN "L'assolo di chitarra aumenta il tuo potere! +10 ATK per questo scontro.\n" RESET);
-            break;
-        case bussola:
-            trova_demotorzone(p);
-            break;
-        default: break;
+    if (o_sc < 1 || o_sc > 3 || p->zaino[o_sc - 1] == nessun_oggetto) {
+      printf(RED "Slot vuoto o scelta non valida!\n" RESET);
+      continue;
     }
-    return 0;
+
+    enum TipoOggetto obj = p->zaino[o_sc - 1];
+        
+    // logica specifica per oggetto
+    switch (obj) {
+      case bicicletta:
+        usa_bici = 1;
+        p->zaino[o_sc - 1] = nessun_oggetto;
+        if (isFighting) {
+          printf(GRN "Fuga riuscita! Usi la bici per seminare il nemico.\n" RESET);
+          return 1; // fine scontro
+        } else {
+          p->ha_mosso = 0;
+          printf(GRN "Hai usato la Bici! Ora puoi ignorare i nemici per un movimento.\n" RESET);
+          return 0;
+        }
+
+      case maglietta_fuocoinferno:
+        if (isFighting) {
+          *hp_attuale += 10;
+          p->zaino[o_sc - 1] = nessun_oggetto;
+          printf(GRN "La maglietta ti infonde coraggio! +10 HP temporanei.\n" RESET);
+          return 0;
+        } else {
+          printf(YEL "Meglio conservarla per il combattimento!\n" RESET);
+        }
+        break;
+
+        case bussola:
+          trova_demotorzone(p);
+          p->zaino[o_sc - 1] = nessun_oggetto;
+          break;
+
+        case schitarrata_metallica:
+          if (isFighting) {
+            p->attacco_psichico += 10;
+            p->zaino[o_sc - 1] = nessun_oggetto;
+            printf(GRN "L'assolo aumenta il tuo potere! +10 ATK per questo scontro.\n" RESET);
+            return 0;
+          } else {
+            printf(YEL "Senza nemici è solo rumore. Conservala!\n" RESET);
+          }
+          break;
+
+        default:
+         break;
+    }
+  } while (o_sc != 0);
+
+  return 0;
 }
 
 void combatti(struct Giocatore *p) {
@@ -1089,7 +1114,7 @@ void combatti(struct Giocatore *p) {
             hp_p -= danno_n;
         } 
         else if (c_scelta == 2) {
-            fine_scontro = apri_zaino_combattimento(p, &hp_p);
+            fine_scontro = gestisci_zaino(p, &hp_p, 1);
         }
         
         if (hp_p > 0 && !fine_scontro) {
@@ -1144,10 +1169,22 @@ void gioca() {
 
   // continua finché qualcuno non vince o tutti muoiono
   while (!vittoria && num_attivi > 0) {
+    // creazione array indici giocatori attivi per turno casuale
+    int attivi_indices[4];
+    int num_attivi_turno = 0;
     for (int i = 0; i < 4; i++) {
-      // se è NULL o è morto o non è mai esistito
-      if (players[i] == NULL)
-        continue;
+      if (players[i] != NULL) {
+        attivi_indices[num_attivi_turno] = i;
+        num_attivi_turno++;
+      }
+    }
+
+    // mescola l'ordine dei giocatori per questo turno
+    shuffle_indices(attivi_indices, num_attivi_turno);
+
+    // itera attraverso i giocatori in ordine casuale
+    for (int turn_idx = 0; turn_idx < num_attivi_turno; turn_idx++) {
+      int i = attivi_indices[turn_idx];
       if (vittoria)
         break;
 
@@ -1219,7 +1256,7 @@ void gioca() {
           raccogli_oggetto(p);
           break;
         case 7:
-          utilizza_oggetto(p);
+          gestisci_zaino(p, NULL, 0);
           break;
         case 8:
           passa(p);
