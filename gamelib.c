@@ -892,8 +892,15 @@ void cambia_mondo(struct Giocatore *p) {
     p->posizione = (void *)((struct Zona_MondoReale *)p->posizione)->link_soprasotto;
     p->mondo = soprasotto;
   } else {
-    p->posizione = (void *)((struct Zona_SopraSotto *)p->posizione)->link_soprasotto;
-    p->mondo = reale;
+    int roll = (rand() % 20) + 1;
+    printf(YEL "Tiri un d20 per uscire dal Soprasotto... Risultato: %d (Fortuna: %d)\n" RESET, roll, p->fortuna);
+    if (roll < p->fortuna) {
+      p->posizione = (void *)((struct Zona_SopraSotto *)p->posizione)->link_soprasotto;
+      p->mondo = reale;
+    } else {
+      printf(RED "Il varco non si apre! Sei ancora intrappolato nel Soprasotto.\n" RESET);
+      return;
+    }
   }
   p->ha_mosso = 1;
   usa_bici = 0; // reset dell'effetto bici
