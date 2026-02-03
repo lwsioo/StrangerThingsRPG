@@ -1192,8 +1192,11 @@ void gioca() {
     // itera attraverso i giocatori in ordine casuale
     for (int turn_idx = 0; turn_idx < num_attivi_turno; turn_idx++) {
       int i = attivi_indices[turn_idx];
-      if (vittoria)
-        break;
+      
+      // Controllo di sicurezza: se il player è stato rimosso (NULL), salta
+      if (players[i] == NULL) continue; 
+
+      if (vittoria) break;
 
       struct Giocatore *p = players[i];
       p->ha_mosso = 0; // reset flag movimento all'inizio di ogni turno
@@ -1247,13 +1250,15 @@ void gioca() {
             // controllo se il giocatore è morto
             if (p->difesa_psichica <= 0) {
               printf(RED "\n%s è morto. Le sue spoglie restano nel %s...\n" RESET, p->nome, (p->mondo == reale) ? "Mondo Reale" : "Soprasotto");
+              printf(GRN "\nPremere INVIO per passare al prossimo giocatore..." RESET);
+              getchar(); 
+              // ----------------------------------------------------
 
               free(players[i]);  // libera la memoria allocata
               players[i] = NULL; // segna lo slot come vuoto
               num_attivi--;
               fine_turno = 1; // forza il passaggio al prossimo giocatore
-            } else if (!nemico_vivo(p)) {
-            }
+            } 
           }
           break;
         case 5:
