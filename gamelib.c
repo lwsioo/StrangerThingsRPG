@@ -8,7 +8,7 @@ struct Giocatore *players[4] = {NULL, NULL, NULL, NULL};
 
 static int usa_bici = 0;
 
-// GESTIONE VINCITORI
+/*---GESTIONE VINCITORI---*/
 static char ultimi_vincitori[3][26] = {"Nessuno", "Nessuno", "Nessuno"};
 static int indice_vincitore = 0;
 
@@ -22,7 +22,7 @@ static void shuffle_indices(int *array, int size) {
   }
 }
 
-// GESTIONE MAPPA
+/*---GESTIONE MAPPA---*/
 static int undici_scelto = 0;
 struct Zona_MondoReale *prima_zona_mondoreale = NULL;
 struct Zona_SopraSotto *prima_zona_soprasotto = NULL;
@@ -701,7 +701,7 @@ void impostaGioco() {
   menu_mappa();
 }
 
-// STAMPA CREDITI
+/*---STAMPA CREDITI---*/
 void printCredits() {
   printf("\n" RED "==========================================" RESET "\n");
   printf(RED "=                CREDITI                 =" RESET "\n");
@@ -719,7 +719,7 @@ void printCredits() {
   getchar();
 }
 
-// STAMPA REGOLE
+/*---STAMPA REGOLE---*/
 void printRules() {
   system("clear");
   printf(RED "========================================================\n" RESET);
@@ -765,7 +765,7 @@ void printRules() {
   getchar();
 }
 
-// GESTIONE GIOCO
+/*---GESTIONE GIOCO---*/
 static void stampa_cella_attuale(struct Giocatore *p) {
   char nem = ' ', ogg = ' ';
 
@@ -1149,6 +1149,19 @@ static void passa(struct Giocatore *p) {
     getchar();
 }
 
+static void spoilers(struct Giocatore *p) {
+  
+  if (p->mondo == reale) {
+    struct Zona_MondoReale *zona = (struct Zona_MondoReale *)p->posizione;
+    printf(RED "!!! ATTENZIONE: Nella prossima zona c'è un %s\n" RESET, getNomeNemico(zona->avanti->nemico));
+    printf(RED "!!! ATTENZIONE: Tra due zone invece c'è un %s\n" RESET, getNomeNemico(zona->avanti->avanti->nemico));
+  } else {
+    struct Zona_SopraSotto *zona = (struct Zona_SopraSotto *)p->posizione;
+    printf(RED "!!! ATTENZIONE: Nella prossima zona c'è un %s\n" RESET, getNomeNemico(zona->avanti->nemico));
+    printf(RED "!!! ATTENZIONE: Tra due zone invece c'è un %s\n" RESET, getNomeNemico(zona->avanti->avanti->nemico));
+  }
+}
+
 void gioca() {
   if (mappa_pronta == 0) {
     printf(RED "Errore: La mappa non è pronta o non è stata validata (Opzione 7 del menu mappa).\n" RESET);
@@ -1220,6 +1233,7 @@ void gioca() {
         printf("  [2] Indietreggia      [6] Raccogli Oggetto\n");
         printf("  [3] Cambia Mondo      [7] Utilizza Oggetto\n");
         printf("  [4] Combatti          [8] Passa Turno\n");
+        printf("  [9]Info sui nemici nelle prossime zone\n");
         printf(YEL "------------------------------------------------\n" RESET);
         printf("Scelta: ");
 
@@ -1273,6 +1287,9 @@ void gioca() {
           passa(p);
           fine_turno = 1;
           break;
+        case 9:
+          spoilers(p);
+          break;
         default:
           printf(RED "Scelta non valida.\n" RESET);
         }
@@ -1297,7 +1314,7 @@ void gioca() {
   getchar();
 }
 
-// PULIZIA DELLA MEMORIA
+/*---PULIZIA MEMORIA---*/
 void pulisci_risorse() {
   printf(YEL "\nPulizia della memoria in corso..." RESET "\n");
 
