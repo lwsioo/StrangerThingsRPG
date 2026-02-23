@@ -743,15 +743,20 @@ void printRules() {
   printf("     viene " GRN "completamente ripristinata" RESET " al valore originale.\n");
   printf("   - Se i tuoi HP arrivano a 0 durante lo scontro, sarai eliminato.\n");
 
-  printf(YEL "\n4. EQUIPAGGIAMENTO (ZAINO MAX 3 SLOT)" RESET "\n");
+  printf(YEL "\n4. NEMICI" RESET "\n");
+  printf("   - " RED "Billi" RESET ": 30 HP, 10 Forza\n");
+  printf("   - " RED "Democane" RESET ": 25 HP, 6 Forza\n");
+  printf("   - " RED "Demotorzone (BOSS)" RESET ": 35 HP, 12 Forza\n");
+
+  printf(YEL "\n5. EQUIPAGGIAMENTO (ZAINO MAX 3 SLOT)" RESET "\n");
   printf("   - " GRN "BICICLETTA:" RESET " Permette di fuggire dal combattimento o muoversi due volte.\n");
   printf("   - " GRN "BUSSOLA:" RESET " Indica la distanza precisa dal Demotorzone nel Soprasotto.\n");
   printf("   - " GRN "MAGLIETTA:" RESET " Bonus massiccio di " YEL "+10 HP" RESET " temporanei in battaglia.\n");
   printf("   - " GRN "CHITARRA:" RESET " Bonus massiccio di " YEL "+10 ATK" RESET " temporaneo in battaglia.\n");
 
-  printf(YEL "\n5. VITTORIA" RESET "\n");
+  printf(YEL "\n6. VITTORIA" RESET "\n");
   printf("   - La partita termina quando il primo giocatore sconfigge il\n");
-  printf("     temibile " RED "Demotorzone (45 HP / 12 Forza)" RESET " nel Soprasotto.\n");
+  printf("     temibile " RED "Demotorzone (35 HP / 12 Forza)" RESET " nel Soprasotto.\n");
 
   printf(RED "\n========================================================\n" RESET);
   printf(GRN "Premere INVIO per tornare al menu principale...");
